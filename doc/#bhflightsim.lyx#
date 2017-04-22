@@ -1,0 +1,191 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Black Hole flight simulator
+\end_layout
+
+\begin_layout Author
+Omkar H.
+ Ramachandran
+\end_layout
+
+\begin_layout Section
+Special Relativity
+\end_layout
+
+\begin_layout Standard
+To start, a lorrentz transformation along just one direction was done.
+ In essence,
+\begin_inset Formula 
+\[
+x'\rightarrow\gamma x
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+y'\rightarrow y
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+z'\rightarrow z
+\]
+
+\end_inset
+
+This was simple enough.
+ However neither the time coordinate nor direction change implemented.
+ In addition, this is a rasterized and not a raytraced image.
+ The time coordinate, for now, 
+\emph on
+cannot 
+\emph default
+be implemented since the motion is purely linear but the image of the object
+ does not change.
+\end_layout
+
+\begin_layout Section
+Ray traced Schwarzchild Metric
+\end_layout
+
+\begin_layout Standard
+The Schwarzchild metric is the following:
+\begin_inset Formula 
+\[
+ds^{2}=\left(1-\frac{2M}{r}\right)dt^{2}-\frac{1}{\left(1-\frac{2M}{r}\right)}dr^{2}-r^{2}\left(d\theta^{2}+\sin^{2}\theta d\phi^{2}\right)
+\]
+
+\end_inset
+
+The Null geodesic (i.e the path that I want to raytrace) is given by 
+\begin_inset Formula 
+\[
+g_{\mu\nu}\frac{dx^{\mu}}{ds}\frac{dx^{\nu}}{ds}=\left(\frac{ds}{d\lambda}\right)^{2}=0
+\]
+
+\end_inset
+
+Say 
+\begin_inset Formula $\lambda=t$
+\end_inset
+
+ since any function that looks like 
+\begin_inset Formula $\alpha t+\beta$
+\end_inset
+
+ works.
+ 
+\begin_inset Formula 
+\[
+u^{''}\left(\phi\right)+u=-\frac{1}{mh^{2}u^{2}}F\left(u\right)
+\]
+
+\end_inset
+
+where 
+\begin_inset Formula $u=\frac{1}{r}$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\frac{d^{2}u}{d\phi^{2}}+u=-\frac{3}{2m}u^{3}
+\]
+
+\end_inset
+
+Is the final geodesic equation.
+ Now it's just a simple matter of doing this in RK4 (somehow) in CUDA for
+ every 
+\begin_inset Formula $r$
+\end_inset
+
+ in the banground image.
+ To simplify things, also assume that the light orginates off the surface
+ of a sphere of radius 
+\begin_inset Formula $u_{init}$
+\end_inset
+
+, 
+\begin_inset Formula $\phi\in$
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
