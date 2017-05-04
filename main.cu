@@ -12,7 +12,7 @@ int fps=0,sec0=0,count=0;
 int width = 640;
 int height = 480;
 int size = width*height;
-int mode = 0; // 0 = Newton, 1 = Einstein
+int mode = 1; // 0 = Newton, 1 = Einstein
 int Mode; // RGB vs RGBA
 bool is_change = true;
 
@@ -88,7 +88,7 @@ int FramesPerSecond(void){
 __global__ void ray_solver(float * ux, float * uy, float *uz, float * x, float * y, float *z){
 	// Using pretested values of h and dt
 	const float h = 1.414;
-	const float dt = 0.5;
+	const float dt = 0.125;
 	// Use multiple blocks in 1D with 1024 threads in each
 	int i = blockIdx.x*1024 + threadIdx.x;
 
@@ -96,38 +96,39 @@ __global__ void ray_solver(float * ux, float * uy, float *uz, float * x, float *
 
 	/* Euler method solver - Step size is not a limiting factor
 	 * here, so I'm not bothering with implementing rk4 */
-	if(i<size){
-		//	int flag = 0;
-		float r, powr6;
-		while(1){
-			float r = sqrt(x[i]*x[i]+y[i]*y[i]+z[i]*z[i]);
-			float powr6 = pow(r,6);
+	if(i>size){
+		return;
+	}
+	//int flag = 0;
+//	float r, powr6;
+	while(1){
+		float r = sqrt(x[i]*x[i]+y[i]*y[i]+z[i]*z[i]);
+		float powr6 = pow(r,6);
 
 
-			if(r<1){
-				/* If the radius is less than 1, i.e the ray falls into
-				 *  the black hole, then stop */
-				break;
-			}else if(r>10){
-				/* If ray hits skydome, then stop */
-				break;
-			}
-
-			float cost = z[i]/r;
-			float   k11 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*x[i]/powr6),
-				k12 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*y[i]/powr6),
-				k13 = dt * (-3/2.0*h*h*z[i]/powr6),	
-				k14 = dt * ux[i],
-				k15 = dt * uy[i],
-				k16 = dt * uz[i];
-				ux[i] += k11;
-				uy[i] += k12;
-				uz[i] += k13;
-				x[i] += k14;
-				y[i] += k15;
-				z[i] += k16;
-
+		if(r<1){
+			/* If the radius is less than 1, i.e the ray falls into
+			 *  the black hole, then stop */
+			break;
+		}else if(r>10.0){
+			/* If ray hits skydome, then stop */
+			break;
 		}
+
+		float cost = z[i]/r;
+		float   k11 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*x[i]/powr6),
+			k12 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*y[i]/powr6),
+			k13 = dt * (-3/2.0*h*h*z[i]/powr6),	
+			k14 = dt * ux[i],
+			k15 = dt * uy[i],
+			k16 = dt * uz[i];
+			ux[i] += k11;
+			uy[i] += k12;
+			uz[i] += k13;
+			x[i] += k14;
+			y[i] += k15;
+			z[i] += k16;
+
 	}
 }
 
@@ -158,25 +159,31 @@ void draw_screen(SDL_Surface *surface, Camera C,int * fps, GLuint texture){
 	}else if(mode == 1){
 		int i,j,index;
 		float ratio = width/height;
-		float dphi = 90*ratio;
-		float dtheta = 90;
-		float delphi = dphi/width;
-		float deltheta = dtheta/height;
-
 
 		if(is_change){
 			// Raytraced black hole image
+			float R = 9.0; 
+			float theta = C.Getth();
+			float phi = C.Getph();	
+			float dtheta = 90/ratio;
+			float dphi = 90;
+			float deltheta = dtheta/(height-1);
+			float delphi = dphi/(width-1);
+
 			for(index=0;index<height;index++){
 				for(j=0;j<width;j++){
 					i = width*index + j;
-					ux[i] = 0;
-					uy[i] = 0;
-					uz[i] = 1;
-					x[i] =  -5.0+10.0/(width-1)*j;
-					y[i] = -5.0+10.0/(height-1)*index;
-					z[i] = -5.0;
+					ux[i] = -sin(theta*DEGtoRAD)*cos(phi*DEGtoRAD);
+					uy[i] = -sin(theta*DEGtoRAD)*sin(phi*DEGtoRAD);
+					uz[i] = -cos(theta*DEGtoRAD);
+					x[i] = R*sin((theta-dtheta/2.0+index*deltheta)*DEGtoRAD)*cos((phi-dphi/2.0+j*delphi)*DEGtoRAD);
+					y[i] = R*sin((theta-dtheta/2.0+index*deltheta)*DEGtoRAD)*sin((phi-dphi/2.0+j*delphi)*DEGtoRAD);
+					z[i] = R*cos((theta-dtheta/2.0+index*deltheta)*DEGtoRAD);
 				}
+
 			}
+
+
 
 
 			cudaMemcpy(dev_x,x,sizeof(float)*size,cudaMemcpyHostToDevice);
@@ -204,11 +211,8 @@ void draw_screen(SDL_Surface *surface, Camera C,int * fps, GLuint texture){
 				if(r>10.0){
 					// Ray actually hit the skydome
 					float theta = acos(z[i]/r);
-					if(theta>3.141592){
-						theta -= 3.141592;
-					}
+
 					float phi = atan2(y[i],x[i]);
-					phi += 3.14159265;
 					int xcord = (phi/3.141592/2.0*surface->w);
 					int ycord = (theta/3.141592*surface->h);
 					pixels[i] = get_pixel32(surface,xcord,ycord);

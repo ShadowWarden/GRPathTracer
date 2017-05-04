@@ -15,8 +15,8 @@
 const int move_amt = 5.0f;
 
 Camera::Camera(){
-	th = 360.0f;
-	ph = 00.0f;
+	th = 270.0f;
+	ph = 180.0f;
 	r = 10.0f;
 	beta_x = 0.6; 
 }
@@ -42,7 +42,7 @@ void Camera::Move(int dir){
 		case 2: // ph
 			ph += move_amt;
 			if(ph>=360.0f){
-				ph-=360.0f;
+				ph-=180.0f;
 			}	
 			break;
 		case -2: // -ph
