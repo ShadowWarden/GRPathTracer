@@ -15,9 +15,9 @@
 const int move_amt = 5.0f;
 
 Camera::Camera(){
-	th = 45.0f;
-	ph = 225.0f;
-	r = 5.0f;
+	th = 360.0f;
+	ph = 00.0f;
+	r = 10.0f;
 	beta_x = 0.6; 
 }
 

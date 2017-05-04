@@ -1,17 +1,19 @@
-obj=triangles.o camera.o object.o
+obj=camera.o sphere.o events.o render.o
 
-Triangle: triangles.o camera.o object.o
-	g++ -Wall -std=c++11 -O3 -o bhfs triangles.o camera.o object.o main.cpp -lSDL -lglut -lGLU -lGL
+bhfs: $(obj) main.cu
+	nvcc -o bhfs $(obj) main.cu -lSDL -lglut -lGLU -lGL -lSDL_image -lm
 
 camera.o: camera.cpp
 	g++ -Wall -std=c++11 -O3 -c camera.cpp
 
-object.o: object.cpp
-	g++ -Wall -std=c++11 -O3 -c object.cpp
+sphere.o: sphere.cpp
+	g++ -Wall -std=c++11 -O3 -c sphere.cpp
 
-triangles.o: triangles.cpp
-	g++ -Wall -std=c++11 -O3 -c triangles.cpp
+events.o: events.cpp
+	g++ -Wall -std=c++11 -O3 -c events.cpp
 
+render.o: render.cpp
+	g++ -Wall -std=c++11 -O3 -c render.cpp
 
 .PHONY: clean
 clean:
