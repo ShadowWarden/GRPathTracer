@@ -17,4 +17,4 @@ render.o: render.cpp
 
 .PHONY: clean
 clean:
-	rm -f $(obj) ./bhfs .*.swp
+	rm -f $(obj) ./bhfs .*.swp .*.swo
