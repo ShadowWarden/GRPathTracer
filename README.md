@@ -4,7 +4,7 @@ Raytraced rendering of a Schwarzchild Black Hole
 ## Instructions for Compiling
 You need the SDL1.2, freeglut and CUDA libraries to compile. To install the first two on ubuntu, run the following:
 
-apt-get install libsdl1.2-dev libsdl-image1.2-dev freeglut3
+apt-get install libsdl1.2-dev libsdl-image1.2-dev freeglut3-dev
 
 Installing CUDA is a pain in the neck, unfortunately. You need to install both the Nvidia driver and the CUDA libraries. Instructions to do this are provided here : http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#axzz4g7polGbZ
 
