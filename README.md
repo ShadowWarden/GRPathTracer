@@ -12,7 +12,7 @@ Note : I just about finished writing this, so I haven't had to chance to do any 
 - If you're really ambitious, try putting a pragma in front of the pixel rendering loop in line 206 of main.cu.
 The main bottlenecks are the computation itself (one way of speeding this up is to use rk4 and reduce the step size), the cudaMemcpys - which I can get rid off in the future with a compute shader or even a fragment shader - and the pixel rendering (which can almost certainly be made much faster)
 
-I managed to get 15 frames per second on my system (640x480, openmp pragma with 8 threads) compared to 1100 without the raytracing... Yeah, that's steep
+I managed to get 15 frames per second on my system while actively raytracing (Nvidia GeForce 820M, 640x480, openmp pragma with 8 threads) compared to 1100 without the raytracing... Yeah, that's steep
 
 Once in the program, use 'm' to switch between Newtonian and Relativistic modes. Newtonian rendering just uses raster operations and is thus super fast.
 Note : I think I goofed on the sign of phi, so left arrow will take you right and vice versa in the GR mode.
