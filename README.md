@@ -3,8 +3,11 @@ Raytraced rendering of a Schwarzchild Black Hole
 
 ## Instructions for Compiling
 You need the SDL1.2, freeglut and CUDA libraries to compile. To install the first two on ubuntu, run the following:
+
 apt-get install libsdl1.2-dev freeglut3
+
 Installing CUDA is a pain in the neck, unfortunately. You need to install both the Nvidia driver and the CUDA libraries. Instructions to do this are provided here : http://docs.nvidia.com/cuda/cuda-installation-guide-linux/#axzz4g7polGbZ
+
 Once these packages are installed, run make to compile and ./bhfs to run the program
 
 Note : I just about finished writing this, so I haven't had to chance to do any kind of optimization to increase FPS. In general, the following will make the program run a little faster: 
