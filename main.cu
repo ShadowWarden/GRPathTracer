@@ -9,8 +9,8 @@
 #include "general.h"
 
 int fps=0,sec0=0,count=0;
-int width = 640;
-int height = 480;
+int width = 500;
+int height = 500;
 int size = width*height;
 int mode = 1; // 0 = Newton, 1 = Einstein
 int Mode; // RGB vs RGBA
@@ -88,11 +88,11 @@ int FramesPerSecond(void){
 __global__ void ray_solver(float * ux, float * uy, float *uz, float * x, float * y, float *z){
 	// Using pretested values of h and dt
 	const float h = 1.414;
-	const float dt = 0.125;
+	const float dt = 0.0625;
 	// Use multiple blocks in 1D with 1024 threads in each
 	int i = blockIdx.x*1024 + threadIdx.x;
 
-	int size = 640*480;
+	int size = 500*500;
 
 	/* Euler method solver - Step size is not a limiting factor
 	 * here, so I'm not bothering with implementing rk4 */
@@ -103,7 +103,8 @@ __global__ void ray_solver(float * ux, float * uy, float *uz, float * x, float *
 //	float r, powr6;
 	while(1){
 		float r = sqrt(x[i]*x[i]+y[i]*y[i]+z[i]*z[i]);
-		float powr6 = pow(r,6);
+		float powr5 = pow(r,5);
+		float powr3 = pow(r,3);
 
 
 		if(r<1){
@@ -116,9 +117,9 @@ __global__ void ray_solver(float * ux, float * uy, float *uz, float * x, float *
 		}
 
 		float cost = z[i]/r;
-		float   k11 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*x[i]/powr6),
-			k12 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*y[i]/powr6),
-			k13 = dt * (-3/2.0*h*h*z[i]/powr6),	
+		float   k11 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*(x[i]/powr5/*+x[i]/powr3/h/h*/)),
+			k12 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*(y[i]/powr5/*+y[i]/powr3/h/h*/)),
+			k13 = dt * (-3/2.0*h*h*(z[i]/powr5/*+z[i]/powr3/h/h*/)),	
 			k14 = dt * ux[i],
 			k15 = dt * uy[i],
 			k16 = dt * uz[i];
@@ -143,7 +144,6 @@ void draw_screen(SDL_Surface *surface, Camera C,int * fps, GLuint texture){
 	float Eye_y = r*sin(th*DEGtoRAD)*sin(ph*DEGtoRAD);
 	float Eye_z = r*cos(th*DEGtoRAD);
 
-
 	if(mode == 0){
 		float Up_z = (th>=180.0f && th<360.0f)?-1.0f:1.0f;
 
@@ -163,15 +163,16 @@ void draw_screen(SDL_Surface *surface, Camera C,int * fps, GLuint texture){
 		if(is_change){
 			// Raytraced black hole image
 			float R = 9.0; 
-			float theta = C.Getth();
-			float phi = C.Getph();	
+			float theta = 90.0f;
+			//theta += 180;
+			float phi = ph;	
 			float dtheta = 90/ratio;
 			float dphi = 90;
 			float deltheta = dtheta/(height-1);
 			float delphi = dphi/(width-1);
 
-			for(index=0;index<height;index++){
-				for(j=0;j<width;j++){
+			for(index=height-1;index>=0;index--){
+				for(j=width-1;j>=0;j--){
 					i = width*index + j;
 					ux[i] = -sin(theta*DEGtoRAD)*cos(phi*DEGtoRAD);
 					uy[i] = -sin(theta*DEGtoRAD)*sin(phi*DEGtoRAD);
@@ -210,11 +211,39 @@ void draw_screen(SDL_Surface *surface, Camera C,int * fps, GLuint texture){
 				//		printf("%f\t%f\t%f\t\n",x[i],y[i],z[i]);
 				if(r>10.0){
 					// Ray actually hit the skydome
-					float theta = acos(z[i]/r);
-
+					/* Fix theta_bug */
+//					float dth = (th>180.0)?th-180.0:th;
+					float theta = acos(z[i]/r)+(90.0f-th)/360.0*2*3.14159265;
+/*					if(theta < 0.0){
+						theta += 2*3.14159265;
+					}else if(theta > 2*3.14159264){
+						theta -= 2*3.14159265;
+						theta = (theta < 0)?0:theta;
+			//			fprintf(stderr,"Debug: Hit theta=360\n");
+					}
+*/			
 					float phi = atan2(y[i],x[i]);
-					int xcord = (phi/3.141592/2.0*surface->w);
-					int ycord = (theta/3.141592*surface->h);
+					int xcord=(phi)/3.141592/2.0*surface->w;
+					int ycord;
+					if(theta <= 3.141592 && theta >= 0){		
+						ycord = surface->h-(theta)/3.141592*surface->h;
+//						xcord = ((phi)/3.141592/2.0*surface->w);
+					}else if(theta > 3.141592){
+						ycord = surface->h-(2*3.141592-theta)/3.141592*surface->h;
+//						if(phi>3.141592){
+//							xcord = ((phi-3.141592)/3.141592/2.0*surface->w);
+//						}else{
+//							xcord = ((phi+3.141592)/3.141592/2.0*surface->w);	
+//						}
+					}else if(theta < 0){
+						ycord = surface->h+(theta)/3.141592*surface->h;	
+//						if(phi>3.141592){
+//							xcord = ((phi-3.141592)/3.141592/2.0*surface->w);
+//						}else{
+//							xcord = ((phi+3.141592)/3.141592/2.0*surface->w);	
+//						}
+					}
+			//		fprintf(stderr,"Debug: Theta=%f ycord=%d\n",theta,ycord);
 					pixels[i] = get_pixel32(surface,xcord,ycord);
 					//	pixels[i] = 1;
 					//					if(!flag){

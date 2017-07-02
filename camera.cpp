@@ -12,11 +12,11 @@
 #include "camera.h"
 
 // Amount by which the camera will move in any direction - in degrees
-const int move_amt = 5.0f;
+const int move_amt = 7.0f;
 
 Camera::Camera(){
-	th = 270.0f;
-	ph = 180.0f;
+	th = 90.0f;
+	ph = 320.0f;
 	r = 10.0f;
 	beta_x = 0.6; 
 }
@@ -42,7 +42,7 @@ void Camera::Move(int dir){
 		case 2: // ph
 			ph += move_amt;
 			if(ph>=360.0f){
-				ph-=180.0f;
+				ph-=360.0f;
 			}	
 			break;
 		case -2: // -ph
