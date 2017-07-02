@@ -119,7 +119,7 @@ __global__ void ray_solver(float * ux, float * uy, float *uz, float * x, float *
 		float cost = z[i]/r;
 		float   k11 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*(x[i]/powr5/*+x[i]/powr3/h/h*/)),
 			k12 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*(y[i]/powr5/*+y[i]/powr3/h/h*/)),
-			k13 = dt * (-3/2.0*h*h*(z[i]/powr5/*+z[i]/powr3/h/h*/)),	
+			k13 = dt * (-3/2.0*h*h*(z[i]/powr5/*+z[i]/powr3/h/h*/)),
 			k14 = dt * ux[i],
 			k15 = dt * uy[i],
 			k16 = dt * uz[i];
@@ -228,20 +228,24 @@ void draw_screen(SDL_Surface *surface, Camera C,int * fps, GLuint texture){
 					if(theta <= 3.141592 && theta >= 0){		
 						ycord = surface->h-(theta)/3.141592*surface->h;
 //						xcord = ((phi)/3.141592/2.0*surface->w);
-					}else if(theta > 3.141592){
+					}else if(theta > 3.141592 && theta < 2*3.141592){
 						ycord = surface->h-(2*3.141592-theta)/3.141592*surface->h;
 //						if(phi>3.141592){
 //							xcord = ((phi-3.141592)/3.141592/2.0*surface->w);
 //						}else{
 //							xcord = ((phi+3.141592)/3.141592/2.0*surface->w);	
 //						}
-					}else if(theta < 0){
+					}else if(theta < 0 && theta > -3.141592){
 						ycord = surface->h+(theta)/3.141592*surface->h;	
 //						if(phi>3.141592){
 //							xcord = ((phi-3.141592)/3.141592/2.0*surface->w);
 //						}else{
 //							xcord = ((phi+3.141592)/3.141592/2.0*surface->w);	
 //						}
+					}else if(theta > 2*3.141592){
+						ycord = surface->h-(theta-2*3.141592)/3.141592*surface->h;			
+					}else if(theta < -3.141592){
+						ycord = surface->h-(2*3.141592+theta)/3.141592*surface->h;	
 					}
 			//		fprintf(stderr,"Debug: Theta=%f ycord=%d\n",theta,ycord);
 					pixels[i] = get_pixel32(surface,xcord,ycord);
