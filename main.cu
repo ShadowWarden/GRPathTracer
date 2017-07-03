@@ -103,7 +103,7 @@ __global__ void ray_solver(float * ux, float * uy, float *uz, float * x, float *
 //	float r, powr6;
 	while(1){
 		float r = sqrt(x[i]*x[i]+y[i]*y[i]+z[i]*z[i]);
-		float powr5 = pow(r,5);
+		float powr4 = pow(r,4);
 		float powr3 = pow(r,3);
 
 
@@ -117,9 +117,9 @@ __global__ void ray_solver(float * ux, float * uy, float *uz, float * x, float *
 		}
 
 		float cost = z[i]/r;
-		float   k11 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*(x[i]/powr5/*+x[i]/powr3/h/h*/)),
-			k12 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*(y[i]/powr5/*+y[i]/powr3/h/h*/)),
-			k13 = dt * (-3/2.0*h*h*(z[i]/powr5/*+z[i]/powr3/h/h*/)),
+		float   k11 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*(x[i]/powr4/*+x[i]/powr3/h/h*/)),
+			k12 = dt * (-3/2.0*h*h*sqrt(1-cost*cost)*(y[i]/powr4/*+y[i]/powr3/h/h*/)),
+			k13 = dt * (-3/2.0*h*h*(z[i]/powr4/*+z[i]/powr3/h/h*/)),
 			k14 = dt * ux[i],
 			k15 = dt * uy[i],
 			k16 = dt * uz[i];
@@ -325,8 +325,6 @@ int main(int argc, char ** argv){
 	//	GLuint texture;
 	GLuint TextureID = 0;
 
-	// You should probably use CSurface::OnLoad ... ;)
-	//-- and make sure the Surface pointer is good!
 	SDL_Surface* Surface = IMG_Load("7415.jpg");
 
 	glGenTextures(1, &TextureID);
