@@ -1,5 +1,5 @@
 # GRPathTracer
-Raytraced rendering of a Schwarzchild Black Hole. [master](https://github.com/ShadowWarden/GRPathTracer/master/)
+Raytraced rendering of a Schwarzchild Black Hole. [master](https://github.com/ShadowWarden/GRPathTracer/)
 
 ![alt text](https://github.com/ShadowWarden/GRPathTracer/master/screenshots/picture2.png)
 
