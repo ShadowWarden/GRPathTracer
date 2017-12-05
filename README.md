@@ -1,7 +1,7 @@
 # GRPathTracer
 Raytraced rendering of a Schwarzchild Black Hole. [master](https://github.com/ShadowWarden/GRPathTracer/)
 
-![alt text](https://github.com/ShadowWarden/GRPathTracer/blob/master/screenshots/picture2.png)
+![alt text](https://github.com/ShadowWarden/GRPathTracer/blob/master/screenshots/picture1.png)
 
 ## Instructions for Compiling
 You need the SDL1.2, freeglut and CUDA libraries to compile. To install the first two on ubuntu, run the following:
